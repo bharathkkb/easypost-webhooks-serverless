@@ -32,6 +32,7 @@ jobs:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
+          credentials_file_path: '/creds'
       - name: Deploy function webhook handler
         run: gcloud functions deploy example-easypost-webhook-handler --runtime nodejs10 --trigger-http  --entry-point webhookHandler --timeout 240 --set-env-vars CLOUD_SQL_CONNECTION_NAME=${{ secrets.CLOUD_SQL_CONNECTION_NAME }},DB_NAME=${{ secrets.DB_NAME }},DB_USER=${{ secrets.DB_USER }},WEBHOOK_FUNCTION_URL_EASYPOST=https://us-central1-${{ secrets.GCP_PROJECT_ID }}.cloudfunctions.net/example-easypost-webhook-processor,WEBHOOK_INCOMING_QUEUE_NAME=example-incoming-webhook-queue
       - name: Deploy function easypost webhook processor
