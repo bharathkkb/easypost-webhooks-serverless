@@ -5,12 +5,17 @@
 
 # exclude config
 .gcloudignore
+.github
 .git
 tslint.json
 tsconfig.json
 
+# see /.github/workflows/deploy-on-commit.yml
+creds.json
+
 # NOTE: looks like the /src/* files are used by the .map (so we keep them)
 #       the /**/server.* files are removed, since they are a test harness.
+db
 dist/src/server.*
 src/server.*
 dist/test/*
