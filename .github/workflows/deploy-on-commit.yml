@@ -1,0 +1,41 @@
+# This is a basic workflow to help you get started with Actions
+name: deploy on commit
+
+# Controls when the action will run. 
+on:
+  # Triggers the workflow on push events but only for the master branch
+  push:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "build"
+  release:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # TODO: have the queue deployed as part of CI/CD.  Currently it is manual.
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+      - uses: actions/checkout@v2
+      - name: install build test
+        run: |
+          yarn install
+          yarn build
+          yarn test
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+      - name: Deploy function webhook handler
+        run: gcloud functions deploy example-easypost-webhook-handler --runtime nodejs10 --trigger-http  --entry-point webhookHandler --timeout 240 --set-env-vars CLOUD_SQL_CONNECTION_NAME=${{ secrets.CLOUD_SQL_CONNECTION_NAME }},DB_NAME=${{ secrets.DB_NAME }},DB_USER=${{ secrets.DB_USER }},WEBHOOK_FUNCTION_URL_EASYPOST=https://us-central1-${{ secrets.GCP_PROJECT_ID }}.cloudfunctions.net/example-easypost-webhook-processor,WEBHOOK_INCOMING_QUEUE_NAME=example-incoming-webhook-queue
+      - name: Deploy function easypost webhook processor
+        run: gcloud functions deploy example-easypost-webhook-processor --runtime nodejs10 --trigger-http  --entry-point easypostProcessor --timeout 240 --set-env-vars CLOUD_SQL_CONNECTION_NAME=${{ secrets.CLOUD_SQL_CONNECTION_NAME }},DB_NAME=${{ secrets.DB_NAME }},DB_USER=${{ secrets.DB_USER }}
+      - name: Output completion
+        run: |
+          echo Deploy completed
