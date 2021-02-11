@@ -47,3 +47,6 @@ CLOUD_SQL_CONNECTION_NAME=instance-id-gcp-cloud-sql
 DB_NAME=db-user-name
 DB_USER=db-user
 ```
+
+This repo was created for an issue I had created:
+https://github.com/google-github-actions/deploy-cloud-functions/issues/41
