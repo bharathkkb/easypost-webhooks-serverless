@@ -27,7 +27,7 @@ jobs:
           yarn build
           yarn test
       - id: actual-deploy
-        uses: google-github-actions/deploy-cloud-functions@v0.2.0
+        uses: bharathkkb/deploy-cloud-functions@zip-logs
         with:
           name: example-easypost-webhook-processor
           runtime: nodejs10
